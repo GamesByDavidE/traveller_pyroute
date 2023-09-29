@@ -5,6 +5,8 @@ Created on Sep 23, 2023
 
 Thanks to @GamesByDavidE for original prototype and design discussions
 """
+import math
+
 import numpy as np
 
 
@@ -34,3 +36,54 @@ class DistanceGraph:
             arcs[1][flip] = weight
         else:
             assert False
+
+    def find_shortest_path(self, s, t):
+        numpy_abs = np.abs
+        numpy_max = np.max
+        arcs = self._arcs
+        locations = self._locations
+        s = self._indexes[s]
+        t = self._indexes[t]
+        distances = [math.inf] * len(self._nodes)
+        distances[s] = 0
+        parents = [None] * len(self._nodes)
+        buckets = [[(0, s)]]
+        found_t = False
+        location_t = locations[t]
+        for bucket in buckets:
+            for distance_u, u in bucket:
+                if distance_u != distances[u]:
+                    continue
+                if u == t:
+                    found_t = True
+                base = distance_u - numpy_max(numpy_abs(locations[u] - location_t))
+                max_index = len(arcs[u][0])
+                arc_u = arcs[u]
+                for i in range(0, max_index):
+                    v = arc_u[0][i]
+                    weight = arc_u[1][i]
+                    delta = locations[v] - location_t
+                    heuristic = numpy_max(np.maximum(delta, -1 * delta))
+                    distance_v = (
+                            base
+                            + weight
+                            + heuristic
+                    )
+                    if distances[v] <= distance_v:
+                        continue
+                    distances[v] = distance_v
+                    parents[v] = u
+                    intdist = int(distance_v)
+                    while len(buckets) <= intdist:
+                        buckets.append([])
+                    buckets[intdist].append((distance_v, v))
+            if found_t:
+                break
+        else:
+            return None
+        path = []
+        u = t
+        while u is not None:
+            path.append(u)
+            u = parents[u]
+        return [self._nodes[i] for i in reversed(path)]
