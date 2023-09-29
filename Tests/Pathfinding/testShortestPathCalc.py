@@ -60,6 +60,22 @@ class testShortestPathCalc(baseTest):
 
         self.assertEqual(list(expected_distances.values()), list(actual_distances), "Unexpected distances after SPT creation")
 
+    def test_distance_graph_locations(self):
+        sourcefile = self.unpack_filename('DeltaFiles/Zarushagar-Ibara.sec')
+
+        graph, source, stars = self._setup_graph(sourcefile)
+        distgraph = DistanceGraph(graph)
+
+        self.assertEqual(len(stars), len(distgraph._locations), "In-graph locations unexpected length")
+        # check co-ords of location entries
+        for rawstar in graph:
+            star = graph.nodes[rawstar]['star']
+            rawloc = distgraph._locations[rawstar]
+            self.assertEqual(star.x, rawloc[0], "Unexpected x-coord in location row for star " + str(star))
+            self.assertEqual(star.y, rawloc[1], "Unexpected y-coord in location row for star " + str(star))
+            self.assertEqual(star.z, rawloc[2], "Unexpected z-coord in location row for star " + str(star))
+
+
     def _setup_graph(self, sourcefile):
         sector = SectorDictionary.load_traveller_map_file(sourcefile)
         delta = DeltaDictionary()

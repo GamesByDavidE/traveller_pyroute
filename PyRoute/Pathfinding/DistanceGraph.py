@@ -11,11 +11,15 @@ import numpy as np
 class DistanceGraph:
 
     def __init__(self, graph):
+        rawnodes = graph.nodes()
         self._nodes = list(graph.nodes())
         self._indexes = {node: i for (i, node) in enumerate(self._nodes)}
         self._arcs = [
             (np.array(graph.adj[u]), np.array([data['weight'] for data in list(graph.adj[u].values())], dtype=float))
             for u in self._nodes
+        ]
+        self._locations = [
+            np.array([rawnodes[node]['star'].x, rawnodes[node]['star'].y, rawnodes[node]['star'].z]) for node in graph.nodes
         ]
 
 
