@@ -58,15 +58,16 @@ class DistanceGraph:
                     found_t = True
                 base = distance_u - numpy_max(numpy_abs(locations[u] - location_t))
                 max_index = len(arcs[u][0])
-                arc_u = arcs[u]
+                neighbours = arcs[u][0]
+                weights = arcs[u][1] + base
+
                 for i in range(0, max_index):
-                    v = arc_u[0][i]
-                    weight = arc_u[1][i]
+                    v = neighbours[i]
+                    weight = weights[i]
                     delta = locations[v] - location_t
                     heuristic = numpy_max(np.maximum(delta, -1 * delta))
                     distance_v = (
-                            base
-                            + weight
+                            weight
                             + heuristic
                     )
                     if distances[v] <= distance_v:
