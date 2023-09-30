@@ -89,13 +89,13 @@ class DistanceGraph:
                 for i in range(0, max_index):
                     v = neighbours[i]
                     weight = weights[i]
-                    delta = locations[v] - location_t
-                    heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
-                    heuristics[v] = heuristic_v
-                    distance_v = (
-                            weight
-                            + heuristic_v
-                    )
+                    heuristic_v = heuristics[v]
+                    if 0 == heuristic_v:
+                        delta = locations[v] - location_t
+                        heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
+                        heuristics[v] = heuristic_v
+
+                    distance_v = (weight + heuristic_v)
                     if distances[v] <= distance_v or upper_bound < distance_v:
                         continue
                     distances[v] = distance_v
