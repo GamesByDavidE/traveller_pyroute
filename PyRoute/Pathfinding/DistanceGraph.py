@@ -96,15 +96,19 @@ class DistanceGraph:
                 while len(buckets) < max_bucket:
                     buckets.append([])
 
-                for i in range(0, max_index):
-                    v = neighbours[i]
-                    weight = weights[i]
-                    heuristic_v = heuristics[v]
-                    if 0 == heuristic_v and v != t:
+                raw_heuristics = np.logical_and(0 == heuristics[neighbours], neighbours != t)
+                needs_heuristics = neighbours[raw_heuristics]
+                if 0 < len(needs_heuristics):
+                    for v in needs_heuristics:
                         delta = locations[v] - location_t
                         heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
                         heuristic_v = max(heuristic_v, abs(approx[v] - approx_t))
                         heuristics[v] = heuristic_v
+
+                for i in range(0, max_index):
+                    v = neighbours[i]
+                    weight = weights[i]
+                    heuristic_v = heuristics[v]
 
                     distance_v = (weight + heuristic_v)
                     if distances[v] <= distance_v or upper_bound < distance_v:
