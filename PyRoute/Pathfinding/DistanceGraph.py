@@ -54,7 +54,9 @@ class DistanceGraph:
         heuristic_s = numpy_max(numpy_abs(locations[s] - location_t))
         buckets = [[(0, s, heuristic_s)]]
         found_t = False
+        bucket_num = -1
         for bucket in buckets:
+            bucket_num += 1
             # if this bucket's empty, move on so we don't trip over the upper-bound-bust check below
             if 0 == len(bucket):
                 continue
@@ -109,6 +111,7 @@ class DistanceGraph:
                     if v == t:
                         upper_bound = distance_v
                     intdist = int(distance_v)
+                    assert bucket_num <= intdist, "Attempted insertion into earlier bucket when inserting node " + str(v) + " on bucket " + str(bucket_num) + " with value " + str(distance_v)
                     while len(buckets) <= intdist:
                         buckets.append([])
                     buckets[intdist].append((distance_v, v, heuristic_v))
