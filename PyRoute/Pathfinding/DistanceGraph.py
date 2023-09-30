@@ -55,6 +55,15 @@ class DistanceGraph:
         buckets = [[(0, s, heuristic_s)]]
         found_t = False
         for bucket in buckets:
+            # if this bucket's empty, move on so we don't trip over the upper-bound-bust check below
+            if 0 == len(bucket):
+                continue
+
+            # if lower bound of this bucket will definitely overshoot upper bound, we're done - bail out
+            # nothing remaining to process can be on the shortest path
+            if bucket[0][0] > upper_bound + 1:
+                break
+
             for distance_u, u, heuristic_u in bucket:
                 if distance_u != distances[u] or upper_bound < distance_u:
                     continue
