@@ -199,7 +199,8 @@ class TradeCalculation(RouteCalculation):
             "This route from " + str(star) + " to " + str(target) + " has already been processed in reverse"
 
         try:
-            rawroute, _ = astar_path_indexes(self.galaxy.stars, star.index, target.index, self.galaxy.heuristic_distance_indexes)
+            rawroute, diag = astar_path_indexes(self.galaxy.stars, star.index, target.index, self.galaxy.heuristic_distance_indexes)
+            newroute = self.shortest_path_tree._graph.find_shortest_path(star.index, target.index)
         except nx.NetworkXNoPath:
             return
 
