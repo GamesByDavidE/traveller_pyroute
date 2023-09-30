@@ -200,7 +200,8 @@ class TradeCalculation(RouteCalculation):
 
         try:
             rawroute, diag = astar_path_indexes(self.galaxy.stars, star.index, target.index, self.galaxy.heuristic_distance_indexes)
-            newroute = self.shortest_path_tree._graph.find_shortest_path(star.index, target.index)
+            approx = self.shortest_path_tree.reduced_distances()
+            newroute = self.shortest_path_tree._graph.find_shortest_path(star.index, target.index, approx=approx)
         except nx.NetworkXNoPath:
             return
 

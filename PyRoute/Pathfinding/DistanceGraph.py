@@ -37,7 +37,7 @@ class DistanceGraph:
         else:
             assert False
 
-    def find_shortest_path(self, s, t):
+    def find_shortest_path(self, s, t, approx):
         numpy_abs = np.abs
         numpy_max = np.max
         arcs = self._arcs
@@ -50,8 +50,10 @@ class DistanceGraph:
         distances[s] = 0
         parents = [None] * len(self._nodes)
         location_t = locations[t]
+        approx_t = approx[t]
 
         heuristic_s = numpy_max(numpy_abs(locations[s] - location_t))
+        heuristic_s = max(heuristic_s, abs(approx[s] - approx_t))
         buckets = [[(0, s, heuristic_s)]]
         found_t = False
         bucket_num = -1
@@ -98,9 +100,10 @@ class DistanceGraph:
                     v = neighbours[i]
                     weight = weights[i]
                     heuristic_v = heuristics[v]
-                    if 0 == heuristic_v:
+                    if 0 == heuristic_v and v != t:
                         delta = locations[v] - location_t
                         heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
+                        heuristic_v = max(heuristic_v, abs(approx[v] - approx_t))
                         heuristics[v] = heuristic_v
 
                     distance_v = (weight + heuristic_v)
@@ -108,8 +111,6 @@ class DistanceGraph:
                         continue
                     distances[v] = distance_v
                     parents[v] = u
-                    if v == t:
-                        upper_bound = distance_v
                     intdist = int(distance_v)
                     assert bucket_num <= intdist, "Attempted insertion into earlier bucket when inserting node " + str(v) + " on bucket " + str(bucket_num) + " with value " + str(distance_v)
                     while len(buckets) <= intdist:
