@@ -100,3 +100,6 @@ class ApproximateShortestPathTree:
 
     def is_well_formed(self):
         return True
+
+    def reduced_distances(self):
+        return self._distances * self._divisor
