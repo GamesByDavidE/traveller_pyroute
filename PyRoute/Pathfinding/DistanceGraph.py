@@ -75,6 +75,12 @@ class DistanceGraph:
                 weights = arcs[u][1] + base
                 adjusted_weights = weights + heuristics[neighbours]
 
+                is_target = neighbours == t
+                # If one of the neighbours is the target node, grab an upper bound
+                if np.any(is_target):
+                    targ_bound = weights[is_target][0]
+                    upper_bound = min(upper_bound, targ_bound)
+
                 keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
                 neighbours = neighbours[keep]
                 weights = weights[keep]
