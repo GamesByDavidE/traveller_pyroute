@@ -71,6 +71,11 @@ class DistanceGraph:
                 weights = weights[keep]
 
                 max_index = len(neighbours)
+                max_bucket = max(adjusted_weights) + 50
+                if upper_bound < math.inf:
+                    max_bucket = upper_bound
+                while len(buckets) < max_bucket:
+                    buckets.append([])
 
                 for i in range(0, max_index):
                     v = neighbours[i]
