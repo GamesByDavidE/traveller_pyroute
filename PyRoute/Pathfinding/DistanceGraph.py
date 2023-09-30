@@ -49,16 +49,18 @@ class DistanceGraph:
         upper_bound = math.inf
         distances[s] = 0
         parents = [None] * len(self._nodes)
-        buckets = [[(0, s)]]
-        found_t = False
         location_t = locations[t]
+
+        heuristic_s = numpy_max(numpy_abs(locations[s] - location_t))
+        buckets = [[(0, s, heuristic_s)]]
+        found_t = False
         for bucket in buckets:
-            for distance_u, u in bucket:
+            for distance_u, u, heuristic_u in bucket:
                 if distance_u != distances[u] or upper_bound < distance_u:
                     continue
                 if u == t:
                     found_t = True
-                base = distance_u - numpy_max(numpy_abs(locations[u] - location_t))
+                base = distance_u - heuristic_u
 
                 neighbours = arcs[u][0]
                 weights = arcs[u][1] + base
@@ -74,11 +76,11 @@ class DistanceGraph:
                     v = neighbours[i]
                     weight = weights[i]
                     delta = locations[v] - location_t
-                    heuristic = numpy_max(np.maximum(delta, -1 * delta))
-                    heuristics[v] = heuristic
+                    heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
+                    heuristics[v] = heuristic_v
                     distance_v = (
                             weight
-                            + heuristic
+                            + heuristic_v
                     )
                     if distances[v] <= distance_v or upper_bound < distance_v:
                         continue
@@ -89,7 +91,7 @@ class DistanceGraph:
                     intdist = int(distance_v)
                     while len(buckets) <= intdist:
                         buckets.append([])
-                    buckets[intdist].append((distance_v, v))
+                    buckets[intdist].append((distance_v, v, heuristic_v))
             if found_t:
                 break
         else:
