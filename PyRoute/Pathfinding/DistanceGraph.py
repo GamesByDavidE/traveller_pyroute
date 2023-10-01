@@ -106,18 +106,22 @@ class DistanceGraph:
                     weights = weights[keep]
                     max_index = len(neighbours)
 
+                if 0 == max_index:
+                    continue
+
                 parents[neighbours] = u
                 adjusted_weights = weights + heuristics[neighbours]
                 distances[neighbours] = adjusted_weights
                 int_distances = np.array(adjusted_weights, dtype=int)
+                max_int_dist = numpy_max(int_distances)
+                while len(buckets) <= max_int_dist:
+                    buckets.append([])
 
                 for i in range(0, max_index):
                     v = neighbours[i]
 
                     distance_v = distances[v]
                     intdist = int_distances[i]
-                    while len(buckets) <= intdist:
-                        buckets.append([])
                     buckets[intdist].append((distance_v, v, heuristics[v]))
             if found_t:
                 break
