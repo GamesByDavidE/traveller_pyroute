@@ -48,6 +48,8 @@ class ApproximateShortestPathTree:
                             "Source node " + str(graph.nodes[source][
                                                      'star']) + " has undefined component.  Has calculate_components() been run?")
             seeds = sources.values()
+        else:
+            seeds = [source]
         return seeds, source
 
     def lower_bound(self, source, target):
