@@ -50,10 +50,10 @@ class DistanceGraph:
         distances[s] = 0
         parents = np.ones(len(self._nodes), dtype=int) * -1
         location_t = locations[t]
-        approx_t = approx[t]
+        approx = numpy_abs(approx - approx[t])
 
         heuristic_s = numpy_max(numpy_abs(locations[s] - location_t))
-        heuristic_s = max(heuristic_s, abs(approx[s] - approx_t))
+        heuristic_s = max(heuristic_s, approx[s])
         buckets = [[(0, s, heuristic_s)]]
         found_t = False
         bucket_num = -1
@@ -97,7 +97,7 @@ class DistanceGraph:
                     for v in needs_heuristics:
                         delta = locations[v] - location_t
                         heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
-                        heuristic_v = max(heuristic_v, abs(approx[v] - approx_t))
+                        heuristic_v = max(heuristic_v, approx[v])
                         heuristics[v] = heuristic_v
 
                     adjusted_weights = weights + heuristics[neighbours]
