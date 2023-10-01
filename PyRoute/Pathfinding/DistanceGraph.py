@@ -119,10 +119,7 @@ class DistanceGraph:
 
                 for i in range(0, max_index):
                     v = neighbours[i]
-
-                    distance_v = distances[v]
-                    intdist = int_distances[i]
-                    buckets[intdist].append((distance_v, v, heuristics[v]))
+                    buckets[int_distances[i]].append((distances[v], v, heuristics[v]))
             if found_t:
                 break
         else:
