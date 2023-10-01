@@ -105,14 +105,18 @@ class DistanceGraph:
                         heuristic_v = max(heuristic_v, abs(approx[v] - approx_t))
                         heuristics[v] = heuristic_v
 
+                    adjusted_weights = weights + heuristics[neighbours]
+                    keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
+                    neighbours = neighbours[keep]
+                    weights = weights[keep]
+                    max_index = len(neighbours)
+
                 for i in range(0, max_index):
                     v = neighbours[i]
                     weight = weights[i]
                     heuristic_v = heuristics[v]
 
                     distance_v = (weight + heuristic_v)
-                    if distances[v] <= distance_v or upper_bound < distance_v:
-                        continue
                     distances[v] = distance_v
                     parents[v] = u
                     intdist = int(distance_v)
