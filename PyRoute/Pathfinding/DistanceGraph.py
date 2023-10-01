@@ -112,13 +112,15 @@ class DistanceGraph:
                     max_index = len(neighbours)
 
                 parents[neighbours] = u
-                distances[neighbours] = weights + heuristics[neighbours]
+                adjusted_weights = weights + heuristics[neighbours]
+                distances[neighbours] = adjusted_weights
+                int_distances = np.array(adjusted_weights, dtype=int)
 
                 for i in range(0, max_index):
                     v = neighbours[i]
 
                     distance_v = distances[v]
-                    intdist = int(distance_v)
+                    intdist = int_distances[i]
                     assert bucket_num <= intdist, "Attempted insertion into earlier bucket when inserting node " + str(v) + " on bucket " + str(bucket_num) + " with value " + str(distance_v)
                     while len(buckets) <= intdist:
                         buckets.append([])
