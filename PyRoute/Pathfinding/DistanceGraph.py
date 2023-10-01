@@ -48,7 +48,7 @@ class DistanceGraph:
         heuristics = np.zeros(len(self._nodes))
         upper_bound = math.inf
         distances[s] = 0
-        parents = [None] * len(self._nodes)
+        parents = np.ones(len(self._nodes), dtype=int) * -1
         location_t = locations[t]
         approx_t = approx[t]
 
@@ -130,7 +130,7 @@ class DistanceGraph:
             return None
         path = []
         u = t
-        while u is not None:
+        while u >= 0:
             path.append(u)
             u = parents[u]
         return [self._nodes[i] for i in reversed(path)]
