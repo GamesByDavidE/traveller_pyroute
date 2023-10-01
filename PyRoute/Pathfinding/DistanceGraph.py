@@ -59,14 +59,9 @@ class DistanceGraph:
         bucket_num = -1
         for bucket in buckets:
             bucket_num += 1
-            # if this bucket's empty, move on so we don't trip over the upper-bound-bust check below
+            # if this bucket's empty, move on
             if 0 == len(bucket):
                 continue
-
-            # if lower bound of this bucket will definitely overshoot upper bound, we're done - bail out
-            # nothing remaining to process can be on the shortest path
-            if bucket[0][0] > upper_bound + 1:
-                break
 
             for distance_u, u, heuristic_u in bucket:
                 if distance_u != distances[u] or upper_bound < distance_u:
@@ -121,7 +116,6 @@ class DistanceGraph:
 
                     distance_v = distances[v]
                     intdist = int_distances[i]
-                    assert bucket_num <= intdist, "Attempted insertion into earlier bucket when inserting node " + str(v) + " on bucket " + str(bucket_num) + " with value " + str(distance_v)
                     while len(buckets) <= intdist:
                         buckets.append([])
                     buckets[intdist].append((distance_v, v, heuristics[v]))
