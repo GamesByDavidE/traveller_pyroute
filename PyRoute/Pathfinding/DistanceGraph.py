@@ -111,19 +111,18 @@ class DistanceGraph:
                     weights = weights[keep]
                     max_index = len(neighbours)
 
+                parents[neighbours] = u
+                distances[neighbours] = weights + heuristics[neighbours]
+
                 for i in range(0, max_index):
                     v = neighbours[i]
-                    weight = weights[i]
-                    heuristic_v = heuristics[v]
 
-                    distance_v = (weight + heuristic_v)
-                    distances[v] = distance_v
-                    parents[v] = u
+                    distance_v = distances[v]
                     intdist = int(distance_v)
                     assert bucket_num <= intdist, "Attempted insertion into earlier bucket when inserting node " + str(v) + " on bucket " + str(bucket_num) + " with value " + str(distance_v)
                     while len(buckets) <= intdist:
                         buckets.append([])
-                    buckets[intdist].append((distance_v, v, heuristic_v))
+                    buckets[intdist].append((distance_v, v, heuristics[v]))
             if found_t:
                 break
         else:
