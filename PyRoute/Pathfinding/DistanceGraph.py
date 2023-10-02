@@ -45,11 +45,12 @@ class DistanceGraph:
         locations = self._locations
         s = self._indexes[s]
         t = self._indexes[t]
-        distances = np.ones(len(self._nodes)) * math.inf
-        heuristics = np.zeros(len(self._nodes))
+        num_nodes = len(self._nodes)
+        distances = np.ones(num_nodes) * math.inf
+        heuristics = np.zeros(num_nodes)
         upper_bound = math.inf
         distances[s] = 0
-        parents = np.ones(len(self._nodes), dtype=int) * -1
+        parents = np.ones(num_nodes, dtype=int) * -1
         location_t = locations[t]
         approx = numpy_abs(approx - approx[t])
 
@@ -79,8 +80,7 @@ class DistanceGraph:
                 is_target = neighbours == t
                 # If one of the neighbours is the target node, grab an upper bound
                 if np.any(is_target):
-                    targ_bound = weights[is_target][0]
-                    upper_bound = min(upper_bound, targ_bound)
+                    upper_bound = min(upper_bound, weights[is_target][0])
 
                 keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
                 neighbours = neighbours[keep]
@@ -99,8 +99,7 @@ class DistanceGraph:
                     for v in needs_heuristics:
                         delta = locations[v] - location_t
                         heuristic_v = self._calc_distance(delta[0], delta[1], delta[2])
-                        heuristic_v = max(heuristic_v, approx[v])
-                        heuristics[v] = heuristic_v
+                        heuristics[v] = max(heuristic_v, approx[v])
 
                     adjusted_weights = weights + heuristics[neighbours]
                     keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
