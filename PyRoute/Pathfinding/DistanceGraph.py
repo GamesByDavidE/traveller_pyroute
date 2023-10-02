@@ -5,6 +5,7 @@ Created on Sep 23, 2023
 
 Thanks to @GamesByDavidE for original prototype and design discussions
 """
+import functools
 import math
 
 import numpy as np
@@ -52,7 +53,8 @@ class DistanceGraph:
         location_t = locations[t]
         approx = numpy_abs(approx - approx[t])
 
-        heuristic_s = numpy_max(numpy_abs(locations[s] - location_t))
+        delta_s = locations[s] - location_t
+        heuristic_s = self._calc_distance(delta_s[0], delta_s[1], delta_s[2])
         heuristic_s = max(heuristic_s, approx[s])
         buckets = [[(0, s, heuristic_s)]]
         found_t = False
@@ -96,7 +98,7 @@ class DistanceGraph:
                 if 0 < len(needs_heuristics):
                     for v in needs_heuristics:
                         delta = locations[v] - location_t
-                        heuristic_v = numpy_max(np.maximum(delta, -1 * delta))
+                        heuristic_v = self._calc_distance(delta[0], delta[1], delta[2])
                         heuristic_v = max(heuristic_v, approx[v])
                         heuristics[v] = heuristic_v
 
@@ -130,3 +132,7 @@ class DistanceGraph:
             path.append(u)
             u = parents[u]
         return [self._nodes[i] for i in reversed(path)]
+
+    @functools.cache
+    def _calc_distance(self, dx, dy, dz):
+        return max(abs(dx), abs(dy), abs(dz))
