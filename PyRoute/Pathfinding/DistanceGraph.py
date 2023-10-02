@@ -77,11 +77,6 @@ class DistanceGraph:
                 weights = arcs[u][1] + base
                 adjusted_weights = weights + heuristics[neighbours]
 
-                is_target = neighbours == t
-                # If one of the neighbours is the target node, grab an upper bound
-                if np.any(is_target):
-                    upper_bound = min(upper_bound, weights[is_target][0])
-
                 keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
                 neighbours = neighbours[keep]
                 weights = weights[keep]
@@ -106,6 +101,7 @@ class DistanceGraph:
                 parents[neighbours] = u
                 adjusted_weights = weights + heuristics[neighbours]
                 distances[neighbours] = adjusted_weights
+                upper_bound = distances[t]
                 int_distances = np.array(adjusted_weights, dtype=int)
                 max_int_dist = numpy_max(int_distances)
                 while len(buckets) <= max_int_dist:
