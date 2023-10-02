@@ -205,6 +205,8 @@ class TradeCalculation(RouteCalculation):
         except nx.NetworkXNoPath:
             return
 
+        assert rawroute == newroute, "Classic route, " + str(rawroute) + " does not match distanceGraph route, " + str(newroute)
+
         route = [self.galaxy.star_mapping[item] for item in rawroute]
 
         assert self.galaxy.route_no_revisit(route), "Route between " + str(star) + " and " + str(target) + " revisits at least one star"
