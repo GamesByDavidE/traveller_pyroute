@@ -86,13 +86,6 @@ class DistanceGraph:
                 neighbours = neighbours[keep]
                 weights = weights[keep]
 
-                max_index = len(neighbours)
-                max_bucket = max(adjusted_weights) + 50
-                if upper_bound < math.inf:
-                    max_bucket = upper_bound
-                while len(buckets) < max_bucket:
-                    buckets.append([])
-
                 raw_heuristics = np.logical_and(0 == heuristics[neighbours], neighbours != t)
                 needs_heuristics = neighbours[raw_heuristics]
                 if 0 < len(needs_heuristics):
@@ -105,7 +98,7 @@ class DistanceGraph:
                     keep = np.logical_and(adjusted_weights < distances[neighbours], adjusted_weights <= upper_bound)
                     neighbours = neighbours[keep]
                     weights = weights[keep]
-                    max_index = len(neighbours)
+                max_index = len(neighbours)
 
                 if 0 == max_index:
                     continue
