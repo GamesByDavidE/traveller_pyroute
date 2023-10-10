@@ -149,6 +149,9 @@ def process():
     if args.run_subsector:
         logger.error("Reducing by subsector")
         reducer.reduce_subsector_pass()
+        if args.run_within:
+            reducer.reduce_end_of_lines()
+            reducer.reduce_end_of_lines(reverse=True)
         reducer.is_initial_state_interesting()
 
     if args.run_line:
