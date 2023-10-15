@@ -39,6 +39,11 @@ class DistanceGraph:
             assert False
 
     def find_shortest_path(self, s, t, approx):
+        """
+        @type s: int
+        @type t: int
+        @type approx: ndarray
+        """
         numpy_abs = np.abs
         numpy_max = np.max
         arcs = self._arcs
@@ -85,6 +90,8 @@ class DistanceGraph:
                 needs_heuristics = neighbours[raw_heuristics]
                 if 0 < len(needs_heuristics):
                     for v in needs_heuristics:
+                        # Since v needs a heuristic value, calculate it here as:
+                        # Greater of the basic distance heuristic and adjusted approx value for v
                         delta = locations[v] - location_t
                         heuristic_v = self._calc_distance(delta[0], delta[1], delta[2])
                         heuristics[v] = max(heuristic_v, approx[v])
