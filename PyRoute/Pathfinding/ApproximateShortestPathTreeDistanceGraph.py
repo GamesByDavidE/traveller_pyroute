@@ -53,3 +53,6 @@ class ApproximateShortestPathTreeDistanceGraph(ApproximateShortestPathTree):
 
     def lighten_edge(self, u, v, weight):
         self._graph.lighten_edge(u, v, weight)
+
+    def reduced_distances(self):
+        return self._distances * self._divisor

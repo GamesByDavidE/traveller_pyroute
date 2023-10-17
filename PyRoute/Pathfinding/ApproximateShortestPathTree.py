@@ -3,6 +3,8 @@ Created on Aug 08, 2023
 
 @author: CyberiaResurrection
 """
+import numpy as np
+
 from PyRoute.Pathfinding.single_source_dijkstra import implicit_shortest_path_dijkstra_indexes
 from PyRoute.Star import Star
 
@@ -104,4 +106,5 @@ class ApproximateShortestPathTree:
         return True
 
     def reduced_distances(self):
-        return self._distances * self._divisor
+        distances = np.array(list(self._distances.values()), dtype=float)
+        return distances * self._divisor

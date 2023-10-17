@@ -3,7 +3,7 @@ Created on Sep 21, 2023
 
 @author: CyberiaResurrection
 """
-from ApproximateShortestPathTreeDistanceGraph import ApproximateShortestPathTreeDistanceGraph
+from PyRoute.Pathfinding.ApproximateShortestPathTreeDistanceGraph import ApproximateShortestPathTreeDistanceGraph
 from PyRoute.Pathfinding.ApproximateShortestPathTree import ApproximateShortestPathTree
 from PyRoute.DeltaDebug.DeltaDictionary import SectorDictionary, DeltaDictionary
 from PyRoute.DeltaDebug.DeltaGalaxy import DeltaGalaxy
