@@ -12,7 +12,6 @@ from PyRoute.Calculation.RouteCalculation import RouteCalculation
 from PyRoute.Pathfinding.ApproximateShortestPathTreeDistanceGraph import (
     ApproximateShortestPathTreeDistanceGraph,
 )
-from PyRoute.Pathfinding.astar import astar_path_indexes
 from PyRoute.TradeBalance import TradeBalance
 
 
@@ -243,25 +242,12 @@ class TradeCalculation(RouteCalculation):
         )
 
         try:
-            rawroute, diag = astar_path_indexes(
-                self.galaxy.stars,
-                star.index,
-                target.index,
-                self.galaxy.heuristic_distance_indexes,
-            )
             approx = self.shortest_path_tree.reduced_distances()
-            newroute = self.shortest_path_tree._graph.find_shortest_path(
+            rawroute = self.shortest_path_tree._graph.find_shortest_path(
                 star.index, target.index, approx=approx
             )
         except nx.NetworkXNoPath:
             return
-
-        assert rawroute == newroute, (
-            "Classic route, "
-            + str(rawroute)
-            + " does not match distanceGraph route, "
-            + str(newroute)
-        )
 
         route = [self.galaxy.star_mapping[item] for item in rawroute]
 
