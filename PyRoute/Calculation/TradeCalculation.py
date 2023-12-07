@@ -9,10 +9,7 @@ import networkx as nx
 
 from PyRoute.AllyGen import AllyGen
 from PyRoute.Calculation.RouteCalculation import RouteCalculation
-from PyRoute.Pathfinding.ApproximateShortestPathTreeDistanceGraph import (
-    ApproximateShortestPathTreeDistanceGraph,
-)
-from PyRoute.Pathfinding.astar import astar_path_indexes
+from PyRoute.Pathfinding.distance_oracle import DistanceOracle
 from PyRoute.TradeBalance import TradeBalance
 
 
@@ -193,15 +190,13 @@ class TradeCalculation(RouteCalculation):
         btn = [(s, n, d) for (s, n, d) in self.galaxy.ranges.edges(data=True)]
         btn.sort(key=lambda tn: tn[2]["btn"], reverse=True)
 
-        # Pick landmarks - biggest WTN system in each graph component.  It worked out simpler to do this for _all_
-        # components, even those with only one star.
-        landmarks = self.get_landmarks(index=True)
-        source = max(self.galaxy.star_mapping.values(), key=lambda item: item.wtn)
-        source.is_landmark = True
-        # Feed the landmarks in as roots of their respective shortest-path trees.
-        # This sets up the approximate-shortest-path bounds to be during the first pathfinding call.
-        self.shortest_path_tree = ApproximateShortestPathTreeDistanceGraph(
-            source.index, self.galaxy.stars, 0.2, sources=landmarks
+        self._distance_oracle = DistanceOracle(
+            self.galaxy.stars,
+            lambda i: (
+                self.galaxy.star_mapping[i].x,
+                self.galaxy.star_mapping[i].y,
+                self.galaxy.star_mapping[i].z,
+            ),
         )
 
         base_btn = 0
@@ -242,16 +237,9 @@ class TradeCalculation(RouteCalculation):
             + " has already been processed in reverse"
         )
 
-        try:
-            rawroute, _ = astar_path_indexes(
-                self.galaxy.stars,
-                star.index,
-                target.index,
-                self.galaxy.heuristic_distance_indexes,
-            )
-        except nx.NetworkXNoPath:
+        rawroute = self._distance_oracle.find_shortest_path(star.index, target.index)
+        if rawroute is None:
             return
-
         route = [self.galaxy.star_mapping[item] for item in rawroute]
 
         assert self.galaxy.route_no_revisit(route), (
@@ -400,16 +388,11 @@ class TradeCalculation(RouteCalculation):
             data["count"] += 1
             if reweight:
                 data["weight"] -= (data["weight"] - data["distance"]) / self.route_reuse
-                self.shortest_path_tree.lighten_edge(
+                self._distance_oracle.lighten_edge(
                     start.index, end.index, data["weight"]
                 )
             edges.append((start.index, end.index))
             start = end
-
-        # Feed the list of touched edges into the approximate-shortest-path machinery, so it can update whatever
-        # distance labels it needs to stay within its approximation bound.
-        if reweight:
-            self.shortest_path_tree.update_edges(edges)
 
         return (tradeCr, tradePass)
 
