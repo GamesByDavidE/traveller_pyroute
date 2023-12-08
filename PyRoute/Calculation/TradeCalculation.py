@@ -13,6 +13,7 @@ from PyRoute.Pathfinding.ApproximateShortestPathTreeDistanceGraph import (
     ApproximateShortestPathTreeDistanceGraph,
 )
 from PyRoute.Pathfinding.astar import astar_path_indexes
+from PyRoute.Pathfinding.distance_oracle import DistanceOracle
 from PyRoute.TradeBalance import TradeBalance
 
 
@@ -203,6 +204,13 @@ class TradeCalculation(RouteCalculation):
         self.shortest_path_tree = ApproximateShortestPathTreeDistanceGraph(
             source.index, self.galaxy.stars, 0.2, sources=landmarks
         )
+        self._distance_oracle = DistanceOracle(self.galaxy.stars)
+        self._potentials_list = [
+            [u.x for (i, u) in sorted(self.galaxy.star_mapping.items())],
+            [u.y for (i, u) in sorted(self.galaxy.star_mapping.items())],
+            [u.z for (i, u) in sorted(self.galaxy.star_mapping.items())],
+            self.shortest_path_tree._distances,
+        ]
 
         base_btn = 0
         counter = 0
@@ -242,14 +250,10 @@ class TradeCalculation(RouteCalculation):
             + " has already been processed in reverse"
         )
 
-        try:
-            rawroute, _ = astar_path_indexes(
-                self.galaxy.stars,
-                star.index,
-                target.index,
-                self.galaxy.heuristic_distance_indexes,
-            )
-        except nx.NetworkXNoPath:
+        rawroute = self._distance_oracle.find_shortest_path(
+            star.index, target.index, self._potentials_list
+        )
+        if rawroute is None:
             return
 
         route = [self.galaxy.star_mapping[item] for item in rawroute]
@@ -401,6 +405,9 @@ class TradeCalculation(RouteCalculation):
             if reweight:
                 data["weight"] -= (data["weight"] - data["distance"]) / self.route_reuse
                 self.shortest_path_tree.lighten_edge(
+                    start.index, end.index, data["weight"]
+                )
+                self._distance_oracle.lighten_edge(
                     start.index, end.index, data["weight"]
                 )
             edges.append((start.index, end.index))
